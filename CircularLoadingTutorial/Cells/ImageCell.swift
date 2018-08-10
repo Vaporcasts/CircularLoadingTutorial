@@ -28,15 +28,7 @@ class ImageCell: UITableViewCell {
     }
     
     func configure(with downloader: ImageDownloader, andUrl url: String, forIndexPath indexPath: IndexPath) {
-        if let url = URL(string: url) {
-            let session = URLSession.shared
-            let task = session.dataTask(with: url) { (data, response, error) in
-                if let unwrappedData = data, let image = UIImage(data: unwrappedData) {
-                    self.setImageView(with: image)
-                }
-            }
-            task.resume()
-        }
+        downloader.downloadImage(with: url, withIndexPath: indexPath)
     }
     
     func setImageView(with image: UIImage) {
