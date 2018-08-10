@@ -13,12 +13,12 @@ class ImageDownloader {
     var currentDownloads = [String: ImageDownload]()
     var finishedDownloads = [String: UIImage]()
     
-    func downloadImage(with url: String, withIndexPath indexPath: IndexPath) {
-        print("starting download now")
-        let download = ImageDownload(url: url, indexPath: indexPath)
-        download.task = session.downloadTask(with: URL(string: url)!)
+    func downloadImage(with urlString: String, withIndexPath indexPath: IndexPath) {
+        guard let url = URL(string: urlString) else { return }
+        let download = ImageDownload(url: urlString, indexPath: indexPath)
+        download.task = session.downloadTask(with: url)
         download.task?.resume()
-        currentDownloads[url] = download
+        currentDownloads[urlString] = download
     }
     
     func downloadStarted(for url: String) -> Bool {

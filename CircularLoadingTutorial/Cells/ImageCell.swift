@@ -40,14 +40,14 @@ class ImageCell: UITableViewCell {
         else { downloader.downloadImage(with: url, withIndexPath: indexPath)  }
     }
     
-    func updateProgressBar(with progress: Float) {
-        circularProgress.setProgress(with: progress)
-    }
-    
     func setImageView(with image: UIImage) {
         DispatchQueue.main.async {
             self.postImageView.image = image
         }
+    }
+    
+    func updateProgressBar(with progress: Float) {
+        circularProgress.setProgress(with: progress)
     }
 }
 
@@ -61,7 +61,7 @@ extension ImageCell {
         postImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         
         postImageView.contentMode = UIViewContentMode.scaleAspectFill
-    
+        
         circularProgress.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(circularProgress)
         circularProgress.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true

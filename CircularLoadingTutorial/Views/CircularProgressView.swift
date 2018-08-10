@@ -10,40 +10,42 @@ import UIKit
 
 class CircularProgressView: UIView {
     let progressCircleLayer = CAShapeLayer()
-    let greyCircleLayer = CAShapeLayer()
     
-    let circlePath = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: 150, height: 150)).cgPath
-    let lineWidth: CGFloat = 5
+    var circlePath: UIBezierPath {
+        return UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: 150, height: 150).insetBy(dx: lineWidth / 2, dy: lineWidth / 2))
+    }
+    
+    var lineWidth: CGFloat { return 5 }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupGreyCircleLayer()
-        setupCircleLayer()
+        setupRedCirlce()
+        backgroundColor = UIColor.clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        let greyPath = UIBezierPath(ovalIn: circlePath.bounds)
+        UIColor.lightGray.setStroke()
+        UIColor.clear.setFill()
+        greyPath.lineWidth = lineWidth
+        
+        greyPath.stroke()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    fileprivate func setupCircleLayer() {
-        progressCircleLayer.path = circlePath
+    fileprivate func setupRedCirlce() {
+        progressCircleLayer.path = circlePath.cgPath
         layer.addSublayer(progressCircleLayer)
         
-        progressCircleLayer.strokeColor = UIColor.red.cgColor;
-        progressCircleLayer.fillColor = UIColor.clear.cgColor;
+        progressCircleLayer.strokeColor = UIColor.red.cgColor
+        progressCircleLayer.fillColor = UIColor.clear.cgColor
         progressCircleLayer.strokeEnd = 0
         progressCircleLayer.lineCap = kCALineCapRound
         progressCircleLayer.lineWidth = lineWidth
-    }
-    
-    fileprivate func setupGreyCircleLayer() {
-        greyCircleLayer.path = circlePath
-        layer.addSublayer(greyCircleLayer)
-        
-        greyCircleLayer.strokeColor = UIColor.lightGray.cgColor
-        greyCircleLayer.fillColor = UIColor.clear.cgColor;
-        greyCircleLayer.strokeEnd = 1
-        greyCircleLayer.lineWidth = lineWidth
     }
     
     func setProgress(with newValue: Float) {
