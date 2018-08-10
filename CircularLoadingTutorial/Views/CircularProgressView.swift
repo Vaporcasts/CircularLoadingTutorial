@@ -10,34 +10,46 @@ import UIKit
 
 class CircularProgressView: UIView {
     let progressCircleLayer = CAShapeLayer()
-    let greyCircleLayer = CAShapeLayer()
     
-    let circlePath = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: 150, height: 150))
-    let lineWidth: CGFloat = 5
+    var circlePath: UIBezierPath {
+        return UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: 150, height: 150).insetBy(dx: lineWidth / 2, dy: lineWidth / 2))
+    }
+    
+    var lineWidth: CGFloat { return 5 }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupCircle(withLayer: greyCircleLayer, andColor: UIColor.lightGray)
-        setupCircle(withLayer: progressCircleLayer, andColor: UIColor.red)
+        setupRedCirlce()
+        backgroundColor = UIColor.clear
+    }
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        let greyPath = UIBezierPath(ovalIn: circlePath.bounds)
+        UIColor.lightGray.setStroke()
+        UIColor.clear.setFill()
+        greyPath.lineWidth = lineWidth
+        
+        greyPath.stroke()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    fileprivate func setupCircle(withLayer layer: CAShapeLayer, andColor strokeColor: UIColor) {
-        layer.path = circlePath.cgPath
+    fileprivate func setupRedCirlce() {
+        progressCircleLayer.path = circlePath.cgPath
         layer.addSublayer(progressCircleLayer)
         
-        layer.strokeColor = strokeColor.cgColor;
-        layer.fillColor = UIColor.clear.cgColor;
-        layer.strokeEnd = 0
-        layer.lineCap = kCALineCapRound
-        layer.lineWidth = lineWidth
+        progressCircleLayer.strokeColor = UIColor.red.cgColor
+        progressCircleLayer.fillColor = UIColor.clear.cgColor
+        progressCircleLayer.strokeEnd = 0
+        progressCircleLayer.lineCap = kCALineCapRound
+        progressCircleLayer.lineWidth = lineWidth
     }
     
     func setProgress(with newValue: Float) {
         progressCircleLayer.strokeEnd = CGFloat(newValue)
     }
-
+    
 }

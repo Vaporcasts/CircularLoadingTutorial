@@ -25,16 +25,29 @@ class ImageCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         postImageView.image = nil
+        circularProgress.alpha = 1
     }
     
     func configure(with downloader: ImageDownloader, andUrl url: String, forIndexPath indexPath: IndexPath) {
-        downloader.downloadImage(with: url, withIndexPath: indexPath)
+        if downloader.downloadFinished(for: url) {
+            if let image = downloader.finishedDownloads[url] { setImageView(with: image) }
+            circularProgress.alpha = 0
+        } else if downloader.downloadStarted(for: url) {
+            if let currentProgress = downloader.currentDownloads[url]?.progress {
+                circularProgress.setProgress(with: currentProgress)
+            }
+        }
+        else { downloader.downloadImage(with: url, withIndexPath: indexPath)  }
     }
     
     func setImageView(with image: UIImage) {
         DispatchQueue.main.async {
             self.postImageView.image = image
         }
+    }
+    
+    func updateProgressBar(with progress: Float) {
+        circularProgress.setProgress(with: progress)
     }
 }
 
@@ -48,6 +61,13 @@ extension ImageCell {
         postImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         
         postImageView.contentMode = UIViewContentMode.scaleAspectFill
+        
+        circularProgress.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(circularProgress)
+        circularProgress.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        circularProgress.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        circularProgress.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        circularProgress.widthAnchor.constraint(equalToConstant: 150).isActive = true
     }
 }
 

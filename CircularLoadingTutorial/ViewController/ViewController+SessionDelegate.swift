@@ -10,7 +10,18 @@ import UIKit
 
 extension ViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        print("finished downloding to location: \(location)")
+        do {
+            let data = try Data(contentsOf: location)
+            guard let originalUrl = downloadTask.originalRequest?.url?.absoluteString else { return }
+            DispatchQueue.main.async {
+                guard let image = UIImage(data: data) else { return }
+                if let imageDownload =  self.imageDownloader.currentDownloads[originalUrl], let cell = self.tableView.cellForRow(at: imageDownload.indexPath) as? ImageCell {
+                    cell.postImageView.image = image
+                    cell.circularProgress.alpha = 0
+                }
+                self.imageDownloader.finishedDownloads[originalUrl] = image
+            }
+        } catch { print("could not convert to data from url") }
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
@@ -20,7 +31,7 @@ extension ViewController: URLSessionDownloadDelegate {
             imageDownload.progress = totalProgress
             DispatchQueue.main.async {
                 if let cell = self.tableView.cellForRow(at: imageDownload.indexPath) as? ImageCell {
-                   // need to update cell progress here
+                   cell.updateProgressBar(with: totalProgress)
                 }
             }
         }

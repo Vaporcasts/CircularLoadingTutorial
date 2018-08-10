@@ -20,5 +20,14 @@ class ImageDownloader {
         download.task?.resume()
         currentDownloads[urlString] = download
     }
+    
+    func downloadStarted(for url: String) -> Bool {
+        return currentDownloads.keys.contains(url)
+    }
+    
+    func downloadFinished(for url: String) -> Bool {
+        return finishedDownloads.keys.contains(url)
+    }
+    
 }
 
